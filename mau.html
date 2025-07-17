@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Feliz Cumpleaños Xiomara</title>
+  <link href="https://fonts.googleapis.com/css2?family=Julee&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: black;
+      overflow: hidden;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    #contenido {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding-top: 50px;
+    }
+
+    #countdown {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+
+    #mensaje {
+      font-family: 'Julee', cursive;
+      font-size: 3em;
+      color: #ff33cc;
+      text-shadow: 0 0 20px #ff33cc;
+      display: none;
+    }
+
+    .heart {
+      position: absolute;
+      top: -50px;
+      font-size: 30px;
+      animation: fall 5s linear forwards;
+      color: red;
+      text-shadow: 0 0 5px red;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(110vh);
+        opacity: 0;
+      }
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 25px;
+      font-size: 18px;
+      background-color: #ff00aa;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 0 10px #ff00aa;
+    }
+
+    button:hover {
+      background-color: #e60099;
+    }
+
+    .carta {
+      margin: 30px auto;
+      padding: 20px;
+      max-width: 500px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid #ff66cc;
+      border-radius: 15px;
+      display: none;
+      font-size: 18px;
+    }
+
+    .carta img {
+      margin-top: 20px;
+      width: 100px;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+
+<div id="contenido">
+  <div id="countdown">Cargando contador...</div>
+  <div id="mensaje">🎉 ¡Feliz Cumpleaños Xiomara! 🎉</div>
+  <button onclick="mostrarCarta()">Documento Secreto</button>
+
+  <div class="carta" id="carta">
+    <p>
+      Que te la pases muy bien en tu cumpleaños mi gorda, te amo ❤️.<br><br>
+      Te mando un abrazo, espero que te la pases muy bien mi moshis.<br><br>
+      Eres lo mejor que me ha pasado, espero que nuestra relación dure mucho tiempo 💕.
+    </p>
+    <img src="https://i.pinimg.com/originals/e2/4f/38/e24f38213a4d36dfaa4e84f154a50e57.png" alt="Snoopy">
+  </div>
+</div>
+
+<audio id="cumple" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" loop></audio>
+
+<script>
+  // 🎉 Cuenta regresiva
+  const countdown = document.getElementById("countdown");
+  const mensaje = document.getElementById("mensaje");
+  const carta = document.getElementById("carta");
+  const audio = document.getElementById("cumple");
+
+  const fechaFinal = new Date("2025-07-20T00:00:00");
+
+  function actualizarContador() {
+    const ahora = new Date();
+    const diferencia = fechaFinal - ahora;
+
+    if (diferencia <= 0) {
+      countdown.style.display = "none";
+      mensaje.style.display = "block";
+      audio.play();
+      mostrarCarta(); // Muestra automáticamente
+      clearInterval(intervalo);
+      return;
+    }
+
+    const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+    const horas = Math.floor((diferencia / (1000 * 60 * 60)) % 24);
+    const minutos = Math.floor((diferencia / 1000 / 60) % 60);
+    const segundos = Math.floor((diferencia / 1000) % 60);
+
+    countdown.innerHTML = `${dias}d ${horas}h ${minutos}m ${segundos}s`;
+  }
+
+  const intervalo = setInterval(actualizarContador, 1000);
+  actualizarContador();
+
+  // 💌 Mostrar carta
+  function mostrarCarta() {
+    carta.style.display = "block";
+  }
+
+  // ❤️ Corazones cayendo
+  function crearCorazon() {
+    const heart = document.createElement("div");
+    heart.classList.add("heart");
+    heart.style.left = Math.random() * window.innerWidth + "px";
+    heart.innerHTML = "❤️";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 5000);
+  }
+
+  setInterval(crearCorazon, 3000);
+
+  // 💖 Fondo tipo Matrix (vertical rosa)
+  const canvas = document.getElementById("matrix");
+  const ctx = canvas.getContext("2d");
+
+  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
+
+  const letras = "TE AMO ".split("");
+  const fontSize = 20;
+  const columns = canvas.width / fontSize;
+  const drops = [];
+
+  for (let i = 0; i < columns; i++) {
+    drops[i] = Math.random() * -100;
+  }
+
+  function drawMatrix() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#ff66cc";
+    ctx.font = fontSize + "px monospace";
+
+    for (let i = 0; i < drops.length; i++) {
+      const letra = letras[Math.floor(Math.random() * letras.length)];
+      ctx.fillText(letra, i * fontSize, drops[i] * fontSize);
+
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+
+      drops[i]++;
+    }
+  }
+
+  setInterval(drawMatrix, 50);
+
+  // Ajustar canvas si cambia tamaño
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+</script>
+
+</body>
+</html>
